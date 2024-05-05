@@ -249,7 +249,7 @@ class Handler(FileSystemEventHandler):
         self.start_process()
 
     def start_process(self):
-        p_env = {**os.environ}
+        p_env = os.environ.copy()
         if self.web or self.ios or self.android:
             p_env["FLET_FORCE_WEB_SERVER"] = "true"
 
