@@ -174,10 +174,11 @@ class Command(BaseCommand):
             else []
         )
 
+        args = [sys.executable, "-u"]
+        args += ["-m", options.script] if options.module else [script_path]
+
         my_event_handler = Handler(
-            args=[sys.executable, "-u"]
-            + ["-m"] * options.module
-            + [options.script if options.module else script_path],
+            args=args,
             watch_directory=options.directory or options.recursive,
             script_path=script_path,
             port=port,
