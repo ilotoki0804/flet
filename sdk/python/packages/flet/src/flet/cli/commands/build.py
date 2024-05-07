@@ -20,6 +20,7 @@ from rich import print
 
 import flet.version
 from flet.cli.commands.base import BaseCommand
+from flet.cli.commands.load_pyproject import load_default
 from flet.version import update_version
 
 if is_windows():
@@ -96,13 +97,14 @@ class Command(BaseCommand):
             type=str,
             choices=["macos", "linux", "windows", "web", "apk", "aab", "ipa"],
             help="the type of a package or target platform to build",
+            **load_default("target-platform"),  # type: ignore
         )
         parser.add_argument(
             "python_app_path",
             type=str,
             nargs="?",
-            default=".",
             help="path to a directory with a Python program",
+            **load_default("build.python-app-path", "."),  # type: ignore
         )
         parser.add_argument(
             "-o",
@@ -110,60 +112,70 @@ class Command(BaseCommand):
             dest="output_dir",
             help="where to put resulting executable or bundle (default is <python_app_directory>/build/<target_platform>)",
             required=False,
+            **load_default("build.output"),  # type: ignore
         )
         parser.add_argument(
             "--project",
             dest="project_name",
             help="project name for executable or bundle",
             required=False,
+            **load_default("name"),  # type: ignore
         )
         parser.add_argument(
             "--description",
             dest="description",
             help="the description to use for executable or bundle",
             required=False,
+            **load_default("description"),  # type: ignore
         )
         parser.add_argument(
             "--product",
             dest="product_name",
             help="project display name that is shown in window titles and about app dialogs",
             required=False,
+            **load_default("product-name"),  # type: ignore
         )
         parser.add_argument(
             "--org",
             dest="org_name",
             help='org name in reverse domain name notation, e.g. "com.mycompany" - combined with project name and used as an iOS and Android bundle ID',
             required=False,
+            **load_default("org"),  # type: ignore
         )
         parser.add_argument(
             "--company",
             dest="company_name",
             help="company name to display in about app dialogs",
             required=False,
+            **load_default("company"),  # type: ignore
         )
         parser.add_argument(
             "--copyright",
             dest="copyright",
             help="copyright text to display in about app dialogs",
             required=False,
+            **load_default("copyright"),  # type: ignore
         )
         parser.add_argument(
             "--android-adaptive-icon-background",
             dest="android_adaptive_icon_background",
             help="the color which will be used to fill out the background of the adaptive icon",
             required=False,
+            **load_default("build.android.android-adaptive-icon-background"),  # type: ignore
         )
         parser.add_argument(
             "--splash-color",
             dest="splash_color",
             help="background color of app splash screen on iOS, Android and web",
             required=False,
+            **load_default("build.splash-color"),  # type: ignore
         )
         parser.add_argument(
             "--splash-dark-color",
             dest="splash_dark_color",
             help="background color in dark mode of app splash screen on iOS, Android and web",
             required=False,
+            **load_default("build.splash-color"),  # type: ignore
         )
         parser.add_argument(
             "--no-web-splash",
@@ -171,20 +183,21 @@ class Command(BaseCommand):
             action="store_true",
             default=False,
             help="disable web app splash screen",
+            **load_default("build.web.no-splash"),  # type: ignore
         )
         parser.add_argument(
             "--no-ios-splash",
             dest="no_ios_splash",
             action="store_true",
-            default=False,
             help="disable iOS app splash screen",
+            **load_default("build.ios.no-splash", False, bool),  # type: ignore
         )
         parser.add_argument(
             "--no-android-splash",
             dest="no_android_splash",
             action="store_true",
-            default=False,
             help="disable Android app splash screen",
+            **load_default("build.android.no-splash", False, bool),  # type: ignore
         )
         parser.add_argument(
             "--team",
@@ -192,6 +205,7 @@ class Command(BaseCommand):
             type=str,
             help="Team ID to sign iOS bundle (ipa only)",
             required=False,
+            **load_default("build.ios.team"),  # type: ignore
         )
         parser.add_argument(
             "--base-url",
@@ -199,6 +213,7 @@ class Command(BaseCommand):
             type=str,
             default="/",
             help="base URL for the app (web only)",
+            **load_default("build.web.base-url"),  # type: ignore
         )
         parser.add_argument(
             "--web-renderer",
@@ -206,6 +221,7 @@ class Command(BaseCommand):
             choices=["canvaskit", "html"],
             default="canvaskit",
             help="renderer to use (web only)",
+            **load_default("build.web.renderer"),  # type: ignore
         )
         parser.add_argument(
             "--use-color-emoji",
@@ -213,6 +229,7 @@ class Command(BaseCommand):
             action="store_true",
             default=False,
             help="enables color emojis with CanvasKit renderer (web only)",
+            **load_default("build.web.use-color-emoji"),  # type: ignore
         )
         parser.add_argument(
             "--route-url-strategy",
@@ -220,6 +237,7 @@ class Command(BaseCommand):
             choices=["path", "hash"],
             default="path",
             help="URL routing strategy (web only)",
+            **load_default("build.web.route-url-strategy"),  # type: ignore
         )
         parser.add_argument(
             "--flutter-build-args",
@@ -227,48 +245,54 @@ class Command(BaseCommand):
             action="append",
             nargs="*",
             help="additional arguments for flutter build command",
+            **load_default("build.flutter-build-args", type=list),  # type: ignore
         )
         parser.add_argument(
             "--include-packages",
             dest="flutter_packages",
             nargs="+",
-            default=[],
             help="include extra Flutter Flet packages, such as flet_video, flet_audio, etc.",
+            **load_default("build.include-packages", []),  # type: ignore
         )
         parser.add_argument(
             "--build-number",
             dest="build_number",
-            type=int,
             help="build number - an identifier used as an internal version number",
+            **load_default("version-number", type=int),  # type: ignore
         )
         parser.add_argument(
             "--build-version",
             dest="build_version",
             help='build version - a "x.y.z" string used as the version number shown to users',
+            **load_default("version"),  # type: ignore
         )
         parser.add_argument(
             "--module-name",
             dest="module_name",
             default="main",
             help="python module name with an app entry point",
+            **load_default("build.module-name"),  # type: ignore
         )
         parser.add_argument(
             "--template",
             dest="template",
             type=str,
             help="a directory containing Flutter bootstrap template, or a URL to a git repository template",
+            **load_default("build.template.path"),  # type: ignore
         )
         parser.add_argument(
             "--template-dir",
             dest="template_dir",
             type=str,
             help="relative path to a Flutter bootstrap template in a repository",
+            **load_default("build.template.dir"),  # type: ignore
         )
         parser.add_argument(
             "--template-ref",
             dest="template_ref",
             type=str,
             help="the branch, tag or commit ID to checkout after cloning the repository with Flutter bootstrap template",
+            **load_default("build.template.ref"),  # type: ignore
         )
 
     def handle(self, options: argparse.Namespace) -> None:

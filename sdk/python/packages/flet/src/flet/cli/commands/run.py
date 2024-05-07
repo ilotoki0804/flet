@@ -12,6 +12,7 @@ from urllib.parse import quote, urlparse, urlunparse
 
 import qrcode
 from flet.cli.commands.base import BaseCommand
+from flet.cli.commands.load_pyproject import load_default
 from flet_core.utils import random_string
 from flet_runtime.app import close_flet_view, open_flet_view
 from flet_runtime.utils import (
@@ -34,84 +35,84 @@ class Command(BaseCommand):
             "script",
             type=str,
             nargs="?",
-            default=".",
             help="path to a Python script",
+            **load_default("run.script-path", "."),  # type: ignore
         )
         parser.add_argument(
             "-p",
             "--port",
             dest="port",
             type=int,
-            default=None,
             help="custom TCP port to run Flet app on",
+            **load_default("run.port", None, int),  # type: ignore
         )
         parser.add_argument(
             "--host",
             dest="host",
             type=str,
-            default=None,
             help='host to run Flet web app on. Use "*" to listen on all IPs.',
+            **load_default("run.host", None),  # type: ignore
         )
         parser.add_argument(
             "--name",
             dest="app_name",
             type=str,
-            default=None,
             help="app name to distinguish it from other on the same port",
+            **load_default("name", None),  # type: ignore
         )
         parser.add_argument(
             "-m",
             "--module",
             dest="module",
             action="store_true",
-            default=False,
             help="treat the script as a python module path as opposed to a file path",
+            **load_default("run.module", False, bool),  # type: ignore
         )
         parser.add_argument(
             "-d",
             "--directory",
             dest="directory",
             action="store_true",
-            default=False,
             help="watch script directory",
+            **load_default("run.module", False, bool),  # type: ignore
         )
         parser.add_argument(
             "-r",
             "--recursive",
             dest="recursive",
             action="store_true",
-            default=False,
             help="watch script directory and all sub-directories recursively",
+            **load_default("run.recursive", False, bool),  # type: ignore
         )
         parser.add_argument(
             "-n",
             "--hidden",
             dest="hidden",
             action="store_true",
-            default=False,
             help="application window is hidden on startup",
+            **load_default("run.hidden", False, bool),  # type: ignore
         )
         parser.add_argument(
             "-w",
             "--web",
             dest="web",
             action="store_true",
-            default=False,
             help="open app in a web browser",
+            **load_default("run.web", False, bool),  # type: ignore
         )
         parser.add_argument(
             "--ios",
             dest="ios",
             action="store_true",
-            default=False,
             help="open app on iOS device",
+            **load_default("run.ios", False, bool),  # type: ignore
         )
         parser.add_argument(
             "--android",
             dest="android",
             action="store_true",
-            default=False,
             help="open app on Android device",
+            **load_default("run.android", False, bool),  # type: ignore
         )
         parser.add_argument(
             "-a",
@@ -120,13 +121,14 @@ class Command(BaseCommand):
             type=str,
             default="assets",
             help="path to assets directory",
+            **load_default("run.assets"),  # type: ignore
         )
         parser.add_argument(
             "--ignore-dirs",
             dest="ignore_dirs",
             type=str,
-            default=None,
             help="directories to ignore during watch. If more than one, separate with a comma.",
+            **load_default("run.ignore-dirs", None, bool),  # type: ignore
         )
 
     def handle(self, options: argparse.Namespace) -> None:
